@@ -42,7 +42,7 @@ let mixer = null
 /**
  * Geometry
  */
-const geometry = new THREE.IcosahedronGeometry(1, 10);
+const geometry = new THREE.IcosahedronGeometry(1, 10).toNonIndexed();
 const material = new THREE.ShaderMaterial({
     vertexShader: vertex,
     fragmentShader: fragment,
@@ -121,19 +121,11 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
  * Animate
  */
 const clock = new THREE.Clock()
-let previousTime = 0
 
 const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
-    const deltaTime = elapsedTime - previousTime
-    previousTime = elapsedTime
-
-    // Model animation
-    if(mixer)
-    {
-        mixer.update(deltaTime)
-    }
+    material.uniforms.uTime.value = elapsedTime
 
     // Update controls
     controls.update()
