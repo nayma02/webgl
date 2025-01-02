@@ -1,6 +1,7 @@
 attribute float aRandom;
 
 uniform float uTime;
+uniform float uProgress;
 
 varying vec2 vUv;
 

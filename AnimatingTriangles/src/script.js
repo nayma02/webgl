@@ -12,6 +12,9 @@ import fragment from "./shaders/fragment.glsl"
  */
 // Debug
 const gui = new dat.GUI()
+const debugObject = {
+    uProgress: 0
+}
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -42,17 +45,26 @@ let mixer = null
 /**
  * Geometry
  */
-const geometry = new THREE.IcosahedronGeometry(1, 5)
+const geometry = new THREE.IcosahedronGeometry(1, 3)
 const material = new THREE.ShaderMaterial({
     vertexShader: vertex,
     fragmentShader: fragment,
     uniforms: {
-        uTime: {value: 0}
+        uTime: {value: 0},
+        uProgress: {value: 0}
     },
-    wireframe: true,
+    wireframe: true
 })
 const plane = new THREE.Mesh(geometry, material)
-console.log(geometry)
+
+// const floor = new THREE.Mesh(
+//     new THREE.PlaneGeometry(3, 3, 100, 100),
+//     new THREE.MeshStandardMaterial({color: 0xffffff, side: THREE.DoubleSide })
+// )
+// floor.rotation.x = -Math.PI * 0.5 ;
+// floor.position.y = -1.8;
+// scene.add(floor)
+// TODO: 43.38
 const len = geometry.attributes.position.count;
 let randoms = new Float32Array(len*3);
 for(let i = 0; i<len; i+=3) {
@@ -65,6 +77,10 @@ geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1))
 console.log(geometry)
 scene.add(plane)
 
+gui.add(debugObject, 'uProgress', 0, 1, 0.1).name('uProgress').onChange(val => {
+    material.uniforms.uProgress.value = val;
+    console.log(material.uniforms.uProgress.value)
+})
 /**
  * Lights
  */
@@ -82,6 +98,28 @@ directionalLight.shadow.camera.bottom = - 7
 directionalLight.position.set(- 5, 5, 0)
 scene.add(directionalLight)
 
+// const axesHelper = new THREE.AxesHelper(5); // Size of the axes
+// scene.add(axesHelper);
+
+const spotLight = new THREE.SpotLight(0xffffff, 100);
+spotLight.position.set(0.5, 4, -2);
+spotLight.angle = Math.PI / 14;
+spotLight.penumbra = 1;
+spotLight.decay = 2;
+spotLight.distance = 0;
+spotLight.castShadow = true;
+spotLight.shadow.mapSize.width = 2048;
+spotLight.shadow.mapSize.height = 1024;
+spotLight.shadow.camera.near = 1;
+spotLight.shadow.camera.far = 10;
+spotLight.shadow.focus = 1;
+scene.add(spotLight);
+
+// Add a SpotLightHelper
+// const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+// scene.add(spotLightHelper);
+
+// Update the helper in the render loop to ensure it reflects changes
 /**
  * Sizes
  */
@@ -109,8 +147,8 @@ window.addEventListener('resize', () =>
  * Camera
  */
 // Base camera
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.set(2, 2, 2)
+const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 1, 1000)
+camera.position.set(0, 0, 4)
 scene.add(camera)
 
 // Controls
@@ -150,3 +188,13 @@ const tick = () =>
 }
 
 tick()
+
+// function animate() {
+//     requestAnimationFrame(animate);
+//
+//     // Update the SpotLightHelper
+//     spotLightHelper.update();
+//
+//     renderer.render(scene, camera);
+// }
+// animate();
