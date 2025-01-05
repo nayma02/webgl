@@ -6,6 +6,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import vertex from "./shaders/vertex.glsl"
 import fragment from "./shaders/fragment.glsl"
+import {AxesHelper} from "three";
 
 /**
  * Base
@@ -98,13 +99,16 @@ window.addEventListener('resize', () =>
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.set(2, 2, 2)
+camera.position.set(0, 0, 3)
 scene.add(camera)
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
-controls.target.set(0, 0.75, 0)
+controls.target.set(0, 0, 0)
 controls.enableDamping = true
+
+const axesHelper = new AxesHelper(5)
+scene.add(axesHelper)
 
 /**
  * Renderer
